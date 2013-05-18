@@ -10,11 +10,12 @@ showMenu (){
 	clear
 	echo "BBB Setup Menu : "
 	echo "[1] Install BigBlueButton"
-	echo "[2] Setup Development Environment"
-	echo "[3] Setup Client Dev"
-	echo "[4] Setup API Dev"
-	echo "[5] Setup App Dev"
-	echo "[6] Build Client"
+	echo "[2] Setup Development Tools"
+	echo "[3] Checkout Source"
+	echo "[4] Setup Client Dev"
+	echo "[5] Setup API Dev"
+	echo "[6] Setup App Dev"
+	echo "[7] Build Client"
 	echo "[8] Show IP"
 	echo "[x] Exit"
 }
@@ -69,7 +70,15 @@ echo "Please enter any key to continue"
 pause
 }
 
-setupdev (){
+checkoutsource(){
+	git clone https://github.com/bigbluebutton/bigbluebutton.git
+	cd bigbluebutton
+	git checkout -b develop v0.8
+	echo "Press any key to continue"
+	pause	
+}
+
+setuptools (){
 	cd ~
 	if [ ! -d dev/ ]; then
 		mkdir dev
@@ -77,9 +86,6 @@ setupdev (){
 	cd dev
 	bbb-conf --setup-dev tools
 	source ~/.profile
-	git clone https://github.com/bigbluebutton/bigbluebutton.git
-	cd bigbluebutton
-	git checkout -b develop v0.8
 	echo "Press any key to continue"
 	pause	
 }
@@ -151,12 +157,13 @@ do
 	read OPT
 	echo
 	case $OPT in
-		1) installbbb ;;		
-		2) setupdev ;;
-		3) setupclientdev ;;
-		4) setupapidev ;;
-		5) setupappdev ;;
-		6) buildclient ;;
+		1) installbbb ;;
+		2) setuptools ;;
+		3) checkoutsource ;;		
+		4) setupclientdev ;;
+		5) setupapidev ;;
+		6) setupappdev ;;
+		7) buildclient ;;
 		8) showIP ;echo "Press any key to continue";pause;
 	esac
 done
