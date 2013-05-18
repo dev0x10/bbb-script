@@ -116,7 +116,8 @@ setupappdev() {
 	sudo chmod -R 777 /usr/share/red5/webapps
 	sudo service red5 stop
 	bbb-conf --setup-dev apps
-	cd "$BBBHome"/bigbluebutton-apps
+	mv "$BBBHome"/bigbluebutton-apps/build.gradle "$BBBHome"/bigbluebutton-apps/build.gradle.BAK
+	cp build.gradle.app "$BBBHome"/bigbluebutton-apps/build.gradle
 	gradle resolveDeps
 	gradle clean war deploy
 }
