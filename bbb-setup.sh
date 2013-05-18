@@ -17,6 +17,7 @@ showMenu (){
 	echo "[6] Setup App Dev"
 	echo "[7] Build Client"
 	echo "[8] Show IP"
+	echo "[15] Install Matterhorn"
 	echo "[x] Exit"
 }
 
@@ -139,6 +140,41 @@ buildclient() {
 	pause
 }
 
+installmatterhorn(){
+	sudo mkdir -p /opt/matterhorn
+	sudo chown $USER:$GROUPS /opt/matterhorn
+	sudo apt-get -q -f -y install subversion
+	svn checkout https://opencast.jira.com/svn/MH/tags/1.3.1 /opt/matterhorn/matterhorn_1.3.1
+	sudo apt-get -q -f -y install maven2
+	mkdir tmp
+	cd tmp
+	wget http://archive.apache.org/dist/felix/org.apache.felix.main.distribution-3.2.2.tar.gz
+	tar xvf org.apache.felix.main.distribution-3.2.2.tar.gz
+	mv felix-framework-3.2.2 /opt/matterhorn/felix
+	mkdir /opt/matterhorn/felix/load
+	cp -rf /opt/matterhorn/matterhorn_1.3.1/dlsocs/felix/* /opt/matterhorn/felix/
+	export MAVEN_OPTS='-Xms256m -Xmx960m -XX:PermSize=64m -XX:MaxPermSize=256m'
+	cd /opt/matterhorn/matterhorn_1.3.1/
+	mvn clean install -DdeployTo=/opt/matterhorn/felix/matterhorn
+	cd /opt/matterhorn/matterhorn_1.3.1/docs/scripts/3rd_party
+	export HOME3P=/opt/matterhorn/1.3.1/docs/scripts/3rd_party
+	./check-prereq 2>&1 | tee check-prereq.log
+	./download-sources 2>&1 | tee download-sources.log
+	./linux-compile 2>&1 | tee linux-compile.log
+	echo
+	echo "Change server url "http://localhost" to your hostname"
+	ip=`ifconfig eth0 | sed -n 's/.*dr:\(.*\)\s Bc.*/\1/p'`
+	sed -i "s/org\.opencastproject\.server\.url=.*/org\.opencastproject\.server\.url=http:\/\/$ip:8080/g" /opt/matterhorn/felix/conf/config.properties
+	echo
+	echo "Change default port to 8181"
+sed -i "s/8080/8181/g" /opt/matterhorn/felix/conf/config.properties
+
+	echo
+	echo "To Run Matterhorn : sh /opt/matterhorn/felix/bin/start_matterhorn.sh"
+	echo
+	echo "To Stop Matterhorn : sh /opt/matterhorn/felix/bin/shutdown_matterhorn.sh"
+}
+
 showIP (){
 	DEFAULT_IP=$(ifconfig | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}')
 	echo "Your IP(s):"
@@ -164,6 +200,7 @@ do
 		5) setupapidev ;;
 		6) setupappdev ;;
 		7) buildclient ;;
+		15) installmatterhorn;;
 		8) showIP ;echo "Press any key to continue";pause;
 	esac
 done
