@@ -151,16 +151,14 @@ installmatterhorn(){
 	wget http://archive.apache.org/dist/felix/org.apache.felix.main.distribution-3.2.2.tar.gz
 	tar xvf org.apache.felix.main.distribution-3.2.2.tar.gz
 	mv felix-framework-3.2.2 /opt/matterhorn/felix
+	rm -R tmp
+	rm org.apache.felix.main.distribution-3.2.2.tar.gz
 	mkdir /opt/matterhorn/felix/load
 	cp -rf /opt/matterhorn/matterhorn_1.3.1/dlsocs/felix/* /opt/matterhorn/felix/
 	export MAVEN_OPTS='-Xms256m -Xmx960m -XX:PermSize=64m -XX:MaxPermSize=256m'
 	cd /opt/matterhorn/matterhorn_1.3.1/
 	mvn clean install -DdeployTo=/opt/matterhorn/felix/matterhorn
-	cd /opt/matterhorn/matterhorn_1.3.1/docs/scripts/3rd_party
-	export HOME3P=/opt/matterhorn/1.3.1/docs/scripts/3rd_party
-	./check-prereq 2>&1 | tee check-prereq.log
-	./download-sources 2>&1 | tee download-sources.log
-	./linux-compile 2>&1 | tee linux-compile.log
+	
 	echo
 	echo "Change server url "http://localhost" to your hostname"
 	ip=`ifconfig eth0 | sed -n 's/.*dr:\(.*\)\s Bc.*/\1/p'`
