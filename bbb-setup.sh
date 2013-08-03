@@ -22,53 +22,53 @@ showMenu (){
 }
 
 installbbb () {
-# Add the BigBlueButton key
-wget http://ubuntu.bigbluebutton.org/bigbluebutton.asc -O- | sudo apt-key add -
+	# Add the BigBlueButton key
+	wget http://ubuntu.bigbluebutton.org/bigbluebutton.asc -O- | sudo apt-key add -
 
-# Add the BigBlueButton repository URL and ensure the multiverse is enabled
-echo "deb http://ubuntu.bigbluebutton.org/lucid_dev_08/ bigbluebutton-lucid main" | sudo tee /etc/apt/sources.list.d/bigbluebutton.list
-echo "deb http://us.archive.ubuntu.com/ubuntu/ lucid multiverse" | sudo tee -a /etc/apt/sources.list
+	# Add the BigBlueButton repository URL and ensure the multiverse is enabled
+	echo "deb http://ubuntu.bigbluebutton.org/lucid_dev_08/ bigbluebutton-lucid main" | sudo tee /etc/apt/sources.list.d/bigbluebutton.list
+	echo "deb http://us.archive.ubuntu.com/ubuntu/ lucid multiverse" | sudo tee -a /etc/apt/sources.list
 
-sudo apt-get update
-sudo apt-get dist-upgrade
+	sudo apt-get update
+	sudo apt-get dist-upgrade
 
-sudo apt-get install -f -q -y zlib1g-dev libssl-dev libreadline5-dev libyaml-dev build-essential bison checkinstall libffi5 gcc checkinstall libreadline5 libyaml-0-2
+	######## BIGBLUEBUTTON INSTALLATION
+	sudo apt-get -f -q -y install bigbluebutton
+	sudo apt-get -f -q -y install bbb-demo
+	sudo bbb-conf --clean
+	sudo bbb-conf --check
+	echo "Please enter any key to continue"
+	pause
+}
 
-
-######## RUBY INSTALLATION
-cd /tmp
-wget http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p290.tar.gz
-tar xvzf ruby-1.9.2-p290.tar.gz
-cd ruby-1.9.2-p290
-./configure --prefix=/usr\
-            --program-suffix=1.9.2\
-            --with-ruby-version=1.9.2\
-            --disable-install-doc
-make
-sudo checkinstall -D -y\
-                  --fstrans=no\
-                  --nodoc\
-                  --pkgname='ruby1.9.2'\
-                  --pkgversion='1.9.2-p290'\
-                  --provides='ruby'\
-                  --requires='libc6,libffi5,libgdbm3,libncurses5,libreadline5,openssl,libyaml-0-2,zlib1g'\
-                  --maintainer=brendan.ribera@gmail.com
-sudo update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby1.9.2 500 \
-                         --slave /usr/bin/ri ri /usr/bin/ri1.9.2 \
-                         --slave /usr/bin/irb irb /usr/bin/irb1.9.2 \
-                         --slave /usr/bin/erb erb /usr/bin/erb1.9.2 \
-                         --slave /usr/bin/rdoc rdoc /usr/bin/rdoc1.9.2
-sudo update-alternatives --install /usr/bin/gem gem /usr/bin/gem1.9.2 500
-sudo rm /tmp/ruby-1.9.2-p290.tar.gz
-######## END OF RUBY INSTALLATION
-
-######## BIGBLUEBUTTON INSTALLATION
-sudo apt-get -f -q -y install bigbluebutton
-sudo apt-get -f -q -y install bbb-demo
-sudo bbb-conf --clean
-sudo bbb-conf --check
-echo "Please enter any key to continue"
-pause
+installRuby(){
+	######## RUBY INSTALLATION
+	sudo apt-get install -f -q -y zlib1g-dev libssl-dev libreadline5-dev libyaml-dev build-essential bison checkinstall libffi5 gcc checkinstall libreadline5 libyaml-0-2
+	cd /tmp
+	wget http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p290.tar.gz
+	tar xvzf ruby-1.9.2-p290.tar.gz
+	cd ruby-1.9.2-p290
+	./configure --prefix=/usr\
+	            --program-suffix=1.9.2\
+	            --with-ruby-version=1.9.2\
+	            --disable-install-doc
+	make
+	sudo checkinstall -D -y\
+	                  --fstrans=no\
+	                  --nodoc\
+	                  --pkgname='ruby1.9.2'\
+	                  --pkgversion='1.9.2-p290'\
+	                  --provides='ruby'\
+	                  --requires='libc6,libffi5,libgdbm3,libncurses5,libreadline5,openssl,libyaml-0-2,zlib1g'\
+	                  --maintainer=brendan.ribera@gmail.com
+	sudo update-alternatives --install /usr/bin/ruby ruby /usr/bin/ruby1.9.2 500 \
+	                         --slave /usr/bin/ri ri /usr/bin/ri1.9.2 \
+	                         --slave /usr/bin/irb irb /usr/bin/irb1.9.2 \
+	                         --slave /usr/bin/erb erb /usr/bin/erb1.9.2 \
+	                         --slave /usr/bin/rdoc rdoc /usr/bin/rdoc1.9.2
+	sudo update-alternatives --install /usr/bin/gem gem /usr/bin/gem1.9.2 500
+	sudo rm /tmp/ruby-1.9.2-p290.tar.gz
+	######## END OF RUBY INSTALLATION
 }
 
 checkoutsource(){
@@ -165,8 +165,13 @@ installmatterhorn(){
 	sed -i "s/org\.opencastproject\.server\.url=.*/org\.opencastproject\.server\.url=http:\/\/$ip:8080/g" /opt/matterhorn/felix/conf/config.properties
 	echo
 	echo "Change default port to 8181"
-sed -i "s/8080/8181/g" /opt/matterhorn/felix/conf/config.properties
+	sed -i "s/8080/8181/g" /opt/matterhorn/felix/conf/config.properties
 
+	echo "export M2_REPO=/home/$USER/.m2/repository" >> ~/.bashrc
+	echo "export FELIX_HOME=/opt/matterhorn/1.4.0" >> ~/.bashrc
+	echo "export JAVA_OPTS='-Xms1024m -Xmx1024m -XX:MaxPermSize=256m'" >> ~/.bashrc
+
+	echo "Load profile with : source ~/.bashrc before you run Matterhorn"
 	echo
 	echo "To Run Matterhorn : sh /opt/matterhorn/felix/bin/start_matterhorn.sh"
 	echo
