@@ -119,7 +119,7 @@ installRuby() {
 	sudo update-alternatives --install /usr/bin/gem gem /usr/bin/gem1.9.2 500
 }
 
-installmatterhorn(){
+installMatterhorn(){
 
 	sudo mkdir -p /opt/matterhorn
 	sudo chown $USER:$GROUPS /opt/matterhorn
@@ -224,13 +224,6 @@ do
 	echo
 	case $OPT in
 		1) installbbb ;;
-		2) setuptools ;;
-		3) checkoutsource ;;		
-		4) setupclientdev ;;
-		5) setupapidev ;;
-		6) setupappdev ;;
-		7) buildclient ;;
-		15) installmatterhorn;;
-		8) showIP ;echo "Press any key to continue";pause;
+		2) installMatterhorn ;;
 	esac
 done
