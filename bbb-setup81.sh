@@ -38,9 +38,9 @@ installbbb () {
 
 	installRuby
 
-	sudo apt-get -f -y install bigbluebutton
-	sudo apt-get install bbb-demo
-	sudo apt-get install bbb-playback-matterhorn
+	sudo apt-get -y install bigbluebutton
+	sudo apt-get -y install bbb-demo
+	sudo apt-get -y install bbb-playback-matterhorn
 
 	sudo bbb-conf --clean
 	sudo bbb-conf --check
@@ -129,8 +129,8 @@ installMatterhorn(){
 
 	sudo add-apt-repository ppa:webupd8team/java
 	sudo apt-get update
-	sudo apt-get install oracle-java7-installer
-	sudo apt-get install maven2
+	sudo apt-get -y install oracle-java7-installer
+	sudo apt-get -y install maven2
 
 	configureMatterhorn
 
