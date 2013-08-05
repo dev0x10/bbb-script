@@ -32,7 +32,7 @@ installbbb () {
 	sudo apt-get update
 	sudo apt-get dist-upgrade
 
-	gototemp
+	
 
 	installLibreOffice
 
@@ -44,10 +44,14 @@ installbbb () {
 
 	sudo bbb-conf --clean
 	sudo bbb-conf --check
-
+	
+	echo
+	echo "BigBlueButton installed. Press any key to continue..."
+	pause
 }
 
 installLibreOffice() {
+	gototemp
 	sudo apt-get remove --purge openoffice.org-*
 	wget http://bigbluebutton.googlecode.com/files/openoffice.org_1.0.4_all.deb
 	sudo dpkg -i openoffice.org_1.0.4_all.deb
@@ -60,11 +64,7 @@ installLibreOffice() {
 
 
 installffmpeg(){
-	# Install dependencies
 	sudo apt-get-y install build-essential git-core checkinstall yasm texi2html libopencore-amrnb-dev libopencore-amrwb-dev libsdl1.2-dev libtheora-dev libvorbis-dev libx11-dev libxfixes-dev libxvidcore-dev zlib1g-dev
-
-	#Install YASM
-	gototemp
 	sudo wget http://www.tortall.net/projects/yasm/releases/yasm-1.2.0.tar.gz
 	sudo tar xzvf yasm-1.2.0.tar.gz
 	cd yasm-1.2.0
@@ -105,6 +105,7 @@ installffmpeg(){
 }
 
 installRuby() {
+	gototemp
 	wget https://bigbluebutton.googlecode.com/files/ruby1.9.2_1.9.2-p290-1_amd64.deb
 
 	sudo apt-get install libreadline5 libyaml-0-2
