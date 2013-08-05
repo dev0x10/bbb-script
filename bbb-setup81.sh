@@ -54,16 +54,18 @@ installLibreOffice() {
 	sudo apt-get -y install libreoffice
 }
 
-
-installffmpeg(){
-	sudo apt-get-y install build-essential git-core checkinstall yasm texi2html libopencore-amrnb-dev libopencore-amrwb-dev libsdl1.2-dev libtheora-dev libvorbis-dev libx11-dev libxfixes-dev libxvidcore-dev zlib1g-dev
+installYasm(){
+	cd /usr/local/src
+	sudo apt-get -y install build-essential git-core checkinstall yasm texi2html libopencore-amrnb-dev libopencore-amrwb-dev libsdl1.2-dev libtheora-dev libvorbis-dev libx11-dev libxfixes-dev libxvidcore-dev zlib1g-dev
 	sudo wget http://www.tortall.net/projects/yasm/releases/yasm-1.2.0.tar.gz
 	sudo tar xzvf yasm-1.2.0.tar.gz
 	cd yasm-1.2.0
 	sudo ./configure
 	sudo make
 	sudo checkinstall --pkgname=yasm --pkgversion="1.2.0" --backup=no --deldoc=yes --default
+}
 
+installLibvpx() {
 	# Setup libvpx
 	if [ ! -d /usr/local/src/libvpx ]; then
 	  cd /usr/local/src
@@ -72,9 +74,10 @@ installffmpeg(){
 	  sudo ./configure --enable-shared
 	  sudo make
 	  sudo make install
-	fi
+	fi	
+}
 
-
+installX264() {
 	#Install X264
 	if [ ! -d /usr/local/src/x264 ]; then
 		cd /usr/local/src
@@ -84,6 +87,14 @@ installffmpeg(){
 		sudo make
 		sudo make install
 	fi
+}
+
+
+installffmpeg(){
+	
+	installYasm
+	installLibvpx
+	installX264
 
 	# Install ffmpeg
 	cd /usr/local/src
