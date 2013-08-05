@@ -130,7 +130,8 @@ installMatterhorn(){
 	sudo apt-get -y install subversion
 	svn checkout https://opencast.jira.com/svn/MH/tags/1.4.0 /opt/matterhorn/1.4.0
 	ln -s /opt/matterhorn/1.4.0 /opt/matterhorn/felix
-
+	
+	sudo apt-get install python-software-properties
 	sudo add-apt-repository ppa:webupd8team/java
 	sudo apt-get -y update
 	sudo apt-get -y install oracle-java7-installer
