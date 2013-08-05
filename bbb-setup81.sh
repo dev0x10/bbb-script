@@ -33,7 +33,9 @@ installbbb () {
 	sudo apt-get -y install bigbluebutton
 	sudo apt-get -y install bbb-demo
 	sudo apt-get -y install bbb-playback-matterhorn
-
+	ip=`ifconfig eth0 | sudo sed -n 's/.*dr:\(.*\)\s Bc.*/\1/p'`
+	sudo sed -i "s/192.168.0.147/$ip/g" /usr/local/bigbluebutton/core/scripts/matterhorn.yml
+	
 	sudo bbb-conf --clean
 	sudo bbb-conf --check
 	
@@ -169,8 +171,12 @@ installMatterhorn3P(){
 
 configureMatterhorn() {
 	echo "Change server url "http://localhost" to your hostname"
-	ip=`ifconfig eth0 | sudo sed -n 's/.*dr:\(.*\)\s Bc.*/\1/p'`
-	sudo sed -i "s/192.168.0.147/$ip/g" /usr/local/bigbluebutton/core/scripts/matterhorn.yml
+	ip=`ifconfig eth0 | sed -n 's/.*dr:\(.*\)\s Bc.*/\1/p'`
+	sed -i "s/org\.opencastproject\.server\.url=.*/org\.opencastproject\.server\.url=http:\/\/$ip:8080/g" /opt/matterhorn/1.4.0/etc/config.properties
+	echo
+	echo "Change default port to 8181"
+	sed -i "s/8080/8181/g" /opt/matterhorn/1.4.0/etc/config.properties
+	
 	sed -i "s/PICT_TYPE_I/I/g" /opt/matterhorn/felix/etc/encoding/engage-images.properties
 	sed -i "s/PICT_TYPE_I/I/g" /opt/matterhorn/felix/etc/encoding/feed-images.properties
 	ssh-keygen -t rsa
