@@ -159,7 +159,9 @@ installMatterhorn(){
 	
 	installMatterhorn3P
 	installffmpeg
-
+	
+	createMatterhornService
+	
 	echo "Load profile with : source ~/.bashrc before you run Matterhorn"
 	echo
 	echo "To Run Matterhorn : sh /opt/matterhorn/felix/bin/start_matterhorn.sh"
@@ -187,7 +189,9 @@ configureMatterhorn() {
 	
 	sed -i "s/PICT_TYPE_I/I/g" /opt/matterhorn/felix/etc/encoding/engage-images.properties
 	sed -i "s/PICT_TYPE_I/I/g" /opt/matterhorn/felix/etc/encoding/feed-images.properties
+}
 
+createMatterhornService() {
 	sudo cp /opt/matterhorn/1.4.0/docs/scripts/init/matterhorn_init_d.sh /etc/init.d/matterhorn
 	sudo update-rc.d matterhorn defaults 99
 	sudo sed -i "s/\$\USER/root/g" /etc/init.d/matterhorn
