@@ -33,8 +33,16 @@ installbbb () {
 	sudo apt-get -y install bigbluebutton
 	sudo apt-get -y install bbb-demo
 	sudo apt-get -y install bbb-playback-matterhorn
+	
+	//configure playback with matterhorn
 	ip=`ifconfig eth0 | sudo sed -n 's/.*dr:\(.*\)\s Bc.*/\1/p'`
 	sudo sed -i "s/192.168.0.147/$ip/g" /usr/local/bigbluebutton/core/scripts/matterhorn.yml
+	ssh-keygen -t rsa
+	sudo cp ~/.ssh/id_rsa /usr/local/bigbluebutton/core/scripts/matt_id_rsa
+	sudo chmod 600 /usr/local/bigbluebutton/core/scripts/matt_id_rsa
+	sudo chown tomcat6:tomcat6 /usr/local/bigbluebutton/core/scripts/matt_id_rsa
+	sudo mkdir /root/.ssh
+	sudo cp ~/.ssh/id_rsa.pub /root/.ssh/authorized_keys
 	
 	sudo bbb-conf --clean
 	sudo bbb-conf --check
@@ -179,12 +187,6 @@ configureMatterhorn() {
 	
 	sed -i "s/PICT_TYPE_I/I/g" /opt/matterhorn/felix/etc/encoding/engage-images.properties
 	sed -i "s/PICT_TYPE_I/I/g" /opt/matterhorn/felix/etc/encoding/feed-images.properties
-	ssh-keygen -t rsa
-	sudo cp ~/.ssh/id_rsa /usr/local/bigbluebutton/core/scripts/matt_id_rsa
-	sudo chmod 600 /usr/local/bigbluebutton/core/scripts/matt_id_rsa
-	sudo chown tomcat6:tomcat6 /usr/local/bigbluebutton/core/scripts/matt_id_rsa
-	sudo mkdir /root/.ssh
-	sudo cp ~/.ssh/id_rsa.pub /root/.ssh/authorized_keys
 
 	sudo cp /opt/matterhorn/1.4.0/docs/scripts/init/matterhorn_init_d.sh /etc/init.d/matterhorn
 	sudo update-rc.d matterhorn defaults 99
