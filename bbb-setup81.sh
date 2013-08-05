@@ -1,11 +1,5 @@
 #!/bin/bash
 
-source ~/.profile
-
-BBBHome="/home/$USER/dev/bigbluebutton"
-BBBDemoSite="/var/www/bigbluebutton-default"
-
-
 showMenu (){
 	clear
 	echo "BBB Setup Menu : "
@@ -29,10 +23,8 @@ installbbb () {
 	echo "deb http://ubuntu.bigbluebutton.org/lucid_dev_081/ bigbluebutton-lucid main" | sudo tee /etc/apt/sources.list.d/bigbluebutton.list
 	sudo apt-add-repository ppa:libreoffice/libreoffice-4-0
 
-	sudo apt-get update
-	sudo apt-get dist-upgrade
-
-	
+	sudo apt-get -y update
+	sudo apt-get -y dist-upgrade
 
 	installLibreOffice
 
@@ -52,10 +44,10 @@ installbbb () {
 
 installLibreOffice() {
 	gototemp
-	sudo apt-get remove --purge openoffice.org-*
+	sudo apt-get -y remove --purge openoffice.org-*
 	wget http://bigbluebutton.googlecode.com/files/openoffice.org_1.0.4_all.deb
 	sudo dpkg -i openoffice.org_1.0.4_all.deb
-	sudo apt-get autoremove
+	sudo apt-get -y autoremove
 
 	sudo apt-get -y nstall python-software-properties
 	sudo apt-get -y install libreoffice-common
@@ -129,7 +121,7 @@ installMatterhorn(){
 	ln -s /opt/matterhorn/1.4.0 /opt/matterhorn/felix
 
 	sudo add-apt-repository ppa:webupd8team/java
-	sudo apt-get update
+	sudo apt-get -y update
 	sudo apt-get -y install oracle-java7-installer
 	sudo apt-get -y install maven2
 
