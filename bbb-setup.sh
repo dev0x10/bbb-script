@@ -5,6 +5,7 @@ showMenu (){
 	echo "BBB Setup Menu : "
 	echo "[1] Install BigBlueButton 0.81"
 	echo "[2] Install Matterhorn"
+	echo "[3] Prepare Development Environment"
 	echo "[x] Exit"
 }
 
@@ -21,10 +22,11 @@ installbbb () {
 
 	# Add the BigBlueButton repository URL and ensure the multiverse is enabled
 	echo "deb http://ubuntu.bigbluebutton.org/lucid_dev_081/ bigbluebutton-lucid main" | sudo tee /etc/apt/sources.list.d/bigbluebutton.list
-	sudo apt-add-repository ppa:libreoffice/libreoffice-4-0
 
 	sudo apt-get -y update
 	sudo apt-get -y dist-upgrade
+
+	sudo apt-get install python-software-properties
 
 	installLibreOffice
 
@@ -54,12 +56,13 @@ installbbb () {
 
 installLibreOffice() {
 	gototemp
+	sudo apt-add-repository ppa:libreoffice/libreoffice-4-0
+	sudo apt-get update
 	sudo apt-get -y remove --purge openoffice.org-*
 	wget http://bigbluebutton.googlecode.com/files/openoffice.org_1.0.4_all.deb
 	sudo dpkg -i openoffice.org_1.0.4_all.deb
 	sudo apt-get -y autoremove
 
-	sudo apt-get -y nstall python-software-properties
 	sudo apt-get -y install libreoffice-common
 	sudo apt-get -y install libreoffice
 }
@@ -108,10 +111,10 @@ installffmpeg(){
 
 	# Install ffmpeg
 	cd /usr/local/src
-	sudo wget http://ffmpeg.org/releases/ffmpeg-0.11.3.tar.gz
-	sudo tar -xvzf ffmpeg-0.11.3.tar.gz
-	cd ffmpeg-0.11.3
-	sudo ./configure --enable-gpl --enable-version3 --enable-nonfree --enable-postproc --enable-libfaac --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libtheora --enable-libvorbis --enable-libx264 --enable-libxvid --enable-x11grab --enable-libmp3lame --enable-libvpx --enable-shared
+	sudo wget http://ffmpeg.org/releases/ffmpeg-2.0.1.tar.gz
+	sudo tar -xvzf ffmpeg-2.0.1.tar.gz
+	cd ffmpeg-2.0.1
+	sudo ./configure --enable-gpl --enable-version3 --enable-nonfree --enable-postproc --enable-libfaac --enable-libopencore-amrnb --enable-libopencore-amrwb --enable-libtheora --enable-libvorbis --enable-libxvid --enable-x11grab --enable-libmp3lame --enable-libvpx
 	sudo make
 	sudo make install
 	sudo checkinstall --pkgname=ffmpeg --pkgversion="5:$(./version.sh)" --backup=no --deldoc=yes --default
@@ -197,10 +200,118 @@ createMatterhornService() {
 	sudo sed -i "s/\$\USER/root/g" /etc/init.d/matterhorn
 }
 
+prepareDev() {
+	sudo apt-get install git-core ant openjdk-6-jdk
+	downloadDevTools
+	configureDevTools
+	downloadSource
+	echo
+	echo "Your tools for developing BigBlueButton are ready :)"
+	pause
+}
+
+downloadDevTools() {
+	mkdir -p ~/dev/tools
+	cd ~/dev/tools 
+	wget http://bigbluebutton.googlecode.com/files/gradle-0.8.tar.gz
+	tar xvfz gradle-0.8.tar.gz
+
+	wget http://bigbluebutton.googlecode.com/files/groovy-1.6.5.tar.gz
+	tar xvfz groovy-1.6.5.tar.gz
+
+	wget https://bigbluebutton.googlecode.com/files/grails-1.3.9.tar.gz
+	tar xvfz grails-1.3.9.tar.gz	
+	
+	wget http://fpdownload.adobe.com/pub/flex/sdk/builds/flex4.5/flex_sdk_4.5.0.20967_mpl.zip
+	mkdir -p ~/dev/tools/flex-4.5.0.20967
+	unzip flex_sdk_4.5.0.20967_mpl.zip -d flex-4.5.0.20967
+	
+	mkdir -p flex-4.5.0.20967/frameworks/libs/player/11.2
+	cd flex-4.5.0.20967/frameworks/libs/player/11.2
+	wget http://download.macromedia.com/get/flashplayer/updaters/11/playerglobal11_2.swc
+	mv -f playerglobal11_2.swc playerglobal.swc
+}
+
+configureDevTools() {
+	sudo find ~/dev/tools/flex-4.5.0.20967 -type d -exec chmod o+rx '{}' \;
+	chmod 755 ~/dev/tools/flex-4.5.0.20967/bin/*
+	sudo chmod -R +r ~/dev/tools/flex-4.5.0.20967
+	ln -s ~/dev/tools/flex-4.5.0.20967 ~/dev/tools/flex
+	
+	echo "
+	export GROOVY_HOME=$HOME/dev/tools/groovy-1.6.5
+	export PATH=$PATH:$GROOVY_HOME/bin
+
+	export GRAILS_HOME=$HOME/dev/tools/grails-1.3.9
+	export PATH=$PATH:$GRAILS_HOME/bin
+
+	export FLEX_HOME=$HOME/dev/tools/flex
+	export PATH=$PATH:$FLEX_HOME/bin
+
+	export GRADLE_HOME=$HOME/dev/tools/gradle-0.8
+	export PATH=$PATH:$GRADLE_HOME/bin
+
+	export JAVA_HOME=/usr/lib/jvm/java-6-openjdk
+	export ANT_OPTS=\"-Xmx512m -XX:MaxPermSize=512m\"" >> ~/.profile
+	
+	source ~/.profile
+}
+
+downloadSource() {
+	cd ~/dev
+	git clone https://github.com/bigbluebutton/bigbluebutton.git
+}
+
+setupClientDev() {
+	cd ~/dev/bigbluebutton/
+	cp bigbluebutton-client/resources/config.xml.template bigbluebutton-client/src/conf/config.xml
+	DEFAULT_IP=$(ifconfig | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}')
+	echo -n "Enter your IP address (your default IP: " $DEFAULT_IP "):"  
+	read IP
+	IP=${IP:-$DEFAULT_IP}
+	replaceString "HOST" "$IP" "bigbluebutton-client/src/conf/config.xml"
+	
+	setClientSymLink
+	buildClient
+	echo
+	echo "Now the client application running on ~/dev/bigbluebutton/bigbluebutton-dev/bin/"
+	pause
+}
+
+setClientSymLink() {
+	echo "
+		location /client/BigBlueButton.html {
+			root /home/firstuser/dev/bigbluebutton/bigbluebutton-client;
+			index index.html index.htm;
+			expires 1m;
+		}
+
+		# BigBlueButton Flash client.
+		location /client {
+			root /home/firstuser/dev/bigbluebutton/bigbluebutton-client;
+			index index.html index.htm;
+		}
+	" | sudo tee /etc/bigbluebutton/nginx/client_dev 
+	
+	sudo ln -f -s /etc/bigbluebutton/nginx/client_dev /etc/bigbluebutton/nginx/client.nginx
+	sudo service nginx restart
+}
+
+buildClient() {
+	cd ~/dev/bigbluebutton/bigbluebutton-client
+	ant locales
+	ant
+	sudo bbb-conf --clean
+}
+
 showIP (){
 	DEFAULT_IP=$(ifconfig | grep 'inet addr:'| grep -v '127.0.0.1' | cut -d: -f2 | awk '{ print $1}')
 	echo "Your IP(s):"
 	echo "$DEFAULT_IP"
+}
+
+replaceString (){
+	sed -i 's/'"$1"'/'"$2"'/g' "$3"
 }
 
 pause (){
@@ -217,5 +328,7 @@ do
 	case $OPT in
 		1) installbbb ;;
 		2) installMatterhorn ;;
+		3) prepareDev ;;
+		4) setupClientDev ;;
 	esac
 done
