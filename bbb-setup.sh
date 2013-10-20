@@ -102,13 +102,19 @@ installX264() {
 	fi
 }
 
+installMissingLibs() {
+	sudo apt-get -y -f install libfaac-dev libfaac0
+	sudo apt-get -y -f install libmp3lame-dev
+}
+
 
 installffmpeg(){
 	
 	installYasm
 	installLibvpx
 	installX264
-
+	installMissingLibs
+	
 	# Install ffmpeg
 	cd /usr/local/src
 	sudo wget http://ffmpeg.org/releases/ffmpeg-2.0.1.tar.gz
@@ -140,13 +146,15 @@ installMatterhorn(){
 
 	sudo mkdir -p /opt/matterhorn
 	sudo chown $USER:$GROUPS /opt/matterhorn
-	sudo apt-get -y install subversion
-	svn checkout https://opencast.jira.com/svn/MH/tags/1.4.0 /opt/matterhorn/1.4.0
+	gototemp
+	wget http://bitbucket.org/opencast-community/matterhorn/get/1.4.0.tar.gz
+	tar zxvf 1.4.0.tar.gz
+	mv opencast-community-matterhorn-447545e7dee4 /opt/matterhorn/1.4.0
 	ln -s /opt/matterhorn/1.4.0 /opt/matterhorn/felix
 	
 	sudo apt-get install python-software-properties
 	sudo add-apt-repository ppa:webupd8team/java
-	sudo apt-get -y update
+	sudo apt-get update
 	sudo apt-get -y install oracle-java7-installer
 	sudo apt-get -y install maven2
 
@@ -192,6 +200,7 @@ configureMatterhorn() {
 	
 	sed -i "s/PICT_TYPE_I/I/g" /opt/matterhorn/felix/etc/encoding/engage-images.properties
 	sed -i "s/PICT_TYPE_I/I/g" /opt/matterhorn/felix/etc/encoding/feed-images.properties
+	sed -i "s/-sameq/-q:v\ 0/g" /opt/matterhorn/felix/etc/encoding/matterhorn-movies.properties
 }
 
 createMatterhornService() {
@@ -211,6 +220,8 @@ prepareDev() {
 }
 
 downloadDevTools() {
+	sudo apt-get -f -y install git-core ant openjdk-6-jdk 
+	
 	mkdir -p ~/dev/tools
 	cd ~/dev/tools 
 	wget http://bigbluebutton.googlecode.com/files/gradle-0.8.tar.gz
