@@ -39,12 +39,13 @@ installbbb () {
 	//configure playback with matterhorn
 	ip=`ifconfig eth0 | sudo sed -n 's/.*dr:\(.*\)\s Bc.*/\1/p'`
 	sudo sed -i "s/192.168.0.147/$ip/g" /usr/local/bigbluebutton/core/scripts/matterhorn.yml
+	sudo sed -i "s/root/$USER/g" /usr/local/bigbluebutton/core/scripts/matterhorn.yml
 	ssh-keygen -t rsa
 	sudo cp ~/.ssh/id_rsa /usr/local/bigbluebutton/core/scripts/matt_id_rsa
 	sudo chmod 600 /usr/local/bigbluebutton/core/scripts/matt_id_rsa
 	sudo chown tomcat6:tomcat6 /usr/local/bigbluebutton/core/scripts/matt_id_rsa
 	sudo mkdir /root/.ssh
-	sudo cp ~/.ssh/id_rsa.pub /root/.ssh/authorized_keys
+	sudo cp ~/.ssh/id_rsa.pub ~/.ssh/authorized_keys
 	
 	sudo bbb-conf --clean
 	sudo bbb-conf --check
@@ -206,7 +207,7 @@ configureMatterhorn() {
 createMatterhornService() {
 	sudo cp /opt/matterhorn/1.4.0/docs/scripts/init/matterhorn_init_d.sh /etc/init.d/matterhorn
 	sudo update-rc.d matterhorn defaults 99
-	sudo sed -i "s/\$\USER/root/g" /etc/init.d/matterhorn
+	# sudo sed -i "s/\$\USER/root/g" /etc/init.d/matterhorn
 }
 
 prepareDev() {
