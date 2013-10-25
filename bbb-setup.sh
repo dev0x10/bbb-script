@@ -202,6 +202,8 @@ configureMatterhorn() {
 	sed -i "s/PICT_TYPE_I/I/g" /opt/matterhorn/felix/etc/encoding/engage-images.properties
 	sed -i "s/PICT_TYPE_I/I/g" /opt/matterhorn/felix/etc/encoding/feed-images.properties
 	sed -i "s/-sameq/-qscale 0/g" /opt/matterhorn/felix/etc/encoding/matterhorn-movies.properties
+	
+	mkdir /opt/matterhorn/felix/inbox
 }
 
 createMatterhornService() {
