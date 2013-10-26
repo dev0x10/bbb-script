@@ -1,4 +1,4 @@
-BigBlueButton Development Script
+BigBlueButton Installation & Setup Script
 ====================
 
 Script for latest BigBlueButton 0.81 installation and latest Matterhorn 1.4
