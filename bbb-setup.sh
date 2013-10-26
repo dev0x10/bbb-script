@@ -253,20 +253,20 @@ configureDevTools() {
 	ln -s ~/dev/tools/flex-4.5.0.20967 ~/dev/tools/flex
 	
 	echo "
-	export GROOVY_HOME=$HOME/dev/tools/groovy-1.6.5
-	export PATH=$PATH:$GROOVY_HOME/bin
+        export GROOVY_HOME=\$HOME/dev/tools/groovy-1.6.5
+        export PATH=\$PATH:\$GROOVY_HOME/bin
 
-	export GRAILS_HOME=$HOME/dev/tools/grails-1.3.9
-	export PATH=$PATH:$GRAILS_HOME/bin
+        export GRAILS_HOME=\$HOME/dev/tools/grails-1.3.9
+        export PATH=\$PATH:\$GRAILS_HOME/bin
 
-	export FLEX_HOME=$HOME/dev/tools/flex
-	export PATH=$PATH:$FLEX_HOME/bin
+        export FLEX_HOME=\$HOME/dev/tools/flex
+        export PATH=\$PATH:\$FLEX_HOME/bin
 
-	export GRADLE_HOME=$HOME/dev/tools/gradle-0.8
-	export PATH=$PATH:$GRADLE_HOME/bin
+        export GRADLE_HOME=\$HOME/dev/tools/gradle-0.8
+        export PATH=\$PATH:\$GRADLE_HOME/bin
 
-	export JAVA_HOME=/usr/lib/jvm/java-6-openjdk
-	export ANT_OPTS=\"-Xmx512m -XX:MaxPermSize=512m\"" >> ~/.profile
+        export JAVA_HOME=/usr/lib/jvm/java-6-openjdk
+        export ANT_OPTS=\"-Xmx512m -XX:MaxPermSize=512m\"" >> ~/.profile
 	
 	source ~/.profile
 }
