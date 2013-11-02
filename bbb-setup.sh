@@ -295,14 +295,14 @@ setupClientDev() {
 setClientSymLink() {
 	echo "
 		location /client/BigBlueButton.html {
-			root /home/firstuser/dev/bigbluebutton/bigbluebutton-client;
+			root ~/dev/bigbluebutton/bigbluebutton-client;
 			index index.html index.htm;
 			expires 1m;
 		}
 
 		# BigBlueButton Flash client.
 		location /client {
-			root /home/firstuser/dev/bigbluebutton/bigbluebutton-client;
+			root ~/dev/bigbluebutton/bigbluebutton-client;
 			index index.html index.htm;
 		}
 	" | sudo tee /etc/bigbluebutton/nginx/client_dev 
