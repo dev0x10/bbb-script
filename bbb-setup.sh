@@ -36,7 +36,7 @@ installbbb () {
 	sudo apt-get -y install bbb-demo
 	sudo apt-get -y install bbb-playback-matterhorn
 	
-	//configure playback with matterhorn
+	#configure playback with matterhorn
 	ip=`ifconfig eth0 | sudo sed -n 's/.*dr:\(.*\)\s Bc.*/\1/p'`
 	sudo sed -i "s/192.168.0.147/$ip/g" /usr/local/bigbluebutton/core/scripts/matterhorn.yml
 	sudo sed -i "s/root/$USER/g" /usr/local/bigbluebutton/core/scripts/matterhorn.yml
