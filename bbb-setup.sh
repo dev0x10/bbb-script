@@ -6,6 +6,7 @@ showMenu (){
 	echo "[1] Install BigBlueButton 0.81"
 	echo "[2] Install Matterhorn"
 	echo "[3] Prepare Development Environment"
+	echo "[4] Setup Client Dev"
 	echo "[x] Exit"
 }
 
